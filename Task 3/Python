@@ -1,0 +1,27 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+from transformers import pipeline
+
+app = FastAPI(title="Sentiment Analysis API")
+
+classifier = pipeline("sentiment-analysis")
+
+class TextInput(BaseModel):
+    text: str
+
+@app.get("/")
+def home():
+    return {
+        "message": "Sentiment Analysis API is running"
+    }
+
+@app.post("/predict")
+def predict(data: TextInput):
+    result = classifier(data.text)
+
+    return {
+        "input": data.text,
+        "prediction": result[0]["label"],
+        "confidence": round(result[0]["score"], 4)
+    } 
+3rd one
